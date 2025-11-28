@@ -1,18 +1,18 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig(({ mode }) => {
-  // Load env file based on `mode` in the current working directory.
-  const env = loadEnv(mode, (process as any).cwd(), '');
-  return {
-    plugins: [react()],
-    // This allows the code to access process.env.API_KEY as if it were a Node app,
-    // by replacing the string at build time.
-    define: {
-      'process.env.API_KEY': JSON.stringify(env.API_KEY),
-    },
-    server: {
-      port: 3000
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000,
+    // Proxy for local development to simulate Firebase Rewrites
+    proxy: {
+      '/api': {
+        // UPDATE REQUIRED: Replace 'aimockuptool55122-967185-aa966' with your actual Firebase Project ID if running locally.
+        // You can see your project ID by running `firebase projects:list` in the terminal.
+        target: 'http://127.0.0.1:5001/aimockuptool55122-967185-aa966/us-central1/api', 
+        changeOrigin: true,
+      }
     }
-  };
+  }
 });
