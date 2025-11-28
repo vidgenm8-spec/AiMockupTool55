@@ -1,0 +1,5 @@
+{
+  "name": "AI Mockup Studio",
+  "description": "An AI-powered application that automatically generates high-quality mockups for your clothing designs. Upload your design, and let Gemini create photorealistic product images on models or in various settings.",
+  "requestFramePermissions": []
+}
