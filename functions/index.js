@@ -9,12 +9,13 @@ app.use(cors({ origin: true }));
 app.use(express.json({ limit: "20mb" })); // Increase limit for image uploads
 
 // Initialize Gemini with the server-side API Key
-// IMPORTANT: This must be your GEMINI API KEY (starts with AIza...), NOT your Firebase key.
-// Get it from: https://aistudio.google.com/app/apikey
-// This key comes from functions/.env when running locally or Firebase environment secrets in production.
-const ai = new GoogleGenAI({ apiKey: process.env.AIzaSyC-ZdvcIg6tumOihy1_I4ZWvDmYGLGLg54 });
+// IMPORTANT: This uses the key defined in your functions/.env file.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-app.post("/generateMockup", async (req, res) => {
+// Create a router to hold the routes
+const router = express.Router();
+
+router.post("/generateMockup", async (req, res) => {
   try {
     const { imageBase64, mimeType, style, clothingType, customPrompt } = req.body;
 
@@ -84,7 +85,7 @@ app.post("/generateMockup", async (req, res) => {
   }
 });
 
-app.post("/editImage", async (req, res) => {
+router.post("/editImage", async (req, res) => {
   try {
     const { baseImage, editPrompt } = req.body;
 
@@ -130,5 +131,11 @@ app.post("/editImage", async (req, res) => {
     res.status(500).json({ error: error.message || "Internal server error" });
   }
 });
+
+// Mount the router. 
+// We mount it at "/" for direct function calls and "/api" for Hosting rewrites
+// that might preserve the /api prefix in the request path.
+app.use("/", router);
+app.use("/api", router);
 
 exports.api = onRequest(app);
